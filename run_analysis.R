@@ -63,11 +63,8 @@ totalData <- rbind(trainingData,testingData)
 totalData <- merge(totalData, activities, by.x="Activity",by.y="activityLabel")
 totalData$Activity <- NULL
 
-#write out the tidy data
-write.csv(totalData,"alldata.csv",replace=TRUE)
-
 #summarize data by experiment participant and activity
-summedData <- totalData[!grepl("std",names(totalData))]
+summedData <- totalData
 summedData$status <- NULL
 summedData$KeyID <- paste(summedData$subjectID,summedData$activity,sep="-")
 remergeKey <- summedData[names(summedData) %in% c("subjectID","activity","KeyID")]
@@ -76,9 +73,9 @@ summedData$subjectID <- NULL
 summedData$activity <- NULL
 
 sumData <- summedData %>% group_by(KeyID) %>% summarise_each(funs(mean))
-names(sumData) <- paste(names(sumData),"average", sep="_")
-sumData <- merge(remergeKey, sumData, by.x="KeyID",by.y="KeyID_average")
+names(sumData) <- paste0(names(sumData),"averaged")
+sumData <- merge(remergeKey, sumData, by.x="KeyID",by.y="KeyIDaveraged")
 sumData$KeyID <- NULL
 
 #write out the summarized data
-write.csv(sumData,"datasummarized.csv",replace=TRUE)
+write.table(sumData,"datasummarized.txt")
